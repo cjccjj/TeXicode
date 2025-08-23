@@ -1,0 +1,47 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [x64, arm64]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          architecture: ${{ matrix.arch }}
+
+      - name: Install PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile ./scr/main.py --name txr
+        shell: bash
+
+      - name: Rename artifact
+        run: |
+          OS="${{ matrix.os }}"
+          ARCH="${{ matrix.arch }}"
+          FILE_NAME="txr-${OS}-${ARCH}${{ runner.os == 'Windows' && '.exe' || '' }}"
+          mv dist/txr $FILE_NAME || mv dist/txr.exe $FILE_NAME
+        shell: bash
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "txr-${{ matrix.os }}-${{ matrix.arch }}*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
