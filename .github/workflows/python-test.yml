@@ -4,10 +4,7 @@
 name: Python test
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:  # Manual trigger only
 
 permissions:
   contents: read
