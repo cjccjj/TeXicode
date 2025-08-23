@@ -6,7 +6,7 @@ on:
       tag:
         description: 'Tag for release (e.g., v1.0.0)'
         required: true
-        default: 'v0.1.0'
+        default: 'v1.0.0'
 
 jobs:
   build:
@@ -32,24 +32,39 @@ jobs:
           python-version: '3.11'
           architecture: ${{ matrix.arch }}
 
-      - name: Install PyInstaller
+      - name: Install PyInstaller (Linux/macOS)
+        if: matrix.os != 'windows-latest'
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+        shell: bash
 
-      - name: Build executable
-        run: pyinstaller --onefile ./src/main.py --name txr
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
-
-      - name: Rename artifact
+      - name: Install PyInstaller (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          if ($env:RUNNER_OS -eq "Windows") {
-            Rename-Item "dist\txr.exe" "txr-${{ matrix.os }}-${{ matrix.arch }}.exe"
-          } else {
-            mv dist/txr "txr-${{ matrix.os }}-${{ matrix.arch }}"
-          }
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+        shell: pwsh
+
+      - name: Build executable (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: pyinstaller --onefile ./src/main.py --name txr
+        shell: bash
+
+      - name: Build executable (Windows)
+        if: matrix.os == 'windows-latest'
+        run: pyinstaller --onefile ./src/main.py --name txr
+        shell: pwsh
+
+      - name: Rename artifact (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: mv dist/txr "txr-${{ matrix.os }}-${{ matrix.arch }}"
+        shell: bash
+
+      - name: Rename artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        run: Rename-Item "dist\txr.exe" "txr-${{ matrix.os }}-${{ matrix.arch }}.exe"
+        shell: pwsh
 
       - name: Create Release (if not exists)
         uses: ncipollo/release-action@v1
@@ -58,9 +73,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifact to release
+      - name: Upload artifact to release (Linux/macOS)
+        if: matrix.os != 'windows-latest'
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ runner.os == 'Windows' && 'txr-${{ matrix.os }}-${{ matrix.arch }}.exe' || 'txr-${{ matrix.os }}-${{ matrix.arch }}' }}
+          files: "txr-${{ matrix.os }}-${{ matrix.arch }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifact to release (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "txr-${{ matrix.os }}-${{ matrix.arch }}.exe"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
