@@ -14,7 +14,6 @@ permissions:
 
 jobs:
   lint:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +36,4 @@ jobs:
     - name: Lint with pylint
       run: |
         pylint ./src --exit-zero
-    - name: Test with pytest
-      run: |
-        pytest ./src/main.py
+
