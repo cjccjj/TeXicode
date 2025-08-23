@@ -28,7 +28,7 @@ jobs:
 
       - name: Build executable
         run: |
-          pyinstaller --onefile ./scr/main.py --name txr
+          pyinstaller --onefile ./src/main.py --name txr
         shell: bash
 
       - name: Rename artifact
