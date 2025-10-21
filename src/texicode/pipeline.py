@@ -1,6 +1,6 @@
-from texicode import lexer
-from texicode import parse
-from texicode import render
+from texicode.lexer import lexer
+from texicode.parser import parse
+from texicode.renderer import render
 
 
 def render_tex_rows(tex: str, debug: bool) -> list:
