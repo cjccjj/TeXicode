@@ -1,7 +1,7 @@
 # flask_app.py
 from flask import Flask, request, jsonify
 import re
-import main  # <-- import your CLI script as a module
+from texicode import main  # <-- import your CLI script as a module
 
 app = Flask(__name__)
 

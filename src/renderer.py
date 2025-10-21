@@ -1,6 +1,6 @@
-import node_data
-import arts
-import symbols_art
+from texicode import node_data
+from texicode import arts
+from texicode import symbols_art
 
 def util_revert_font(char: str) -> str:
     if char.isascii():
