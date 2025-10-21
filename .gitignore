@@ -3,7 +3,7 @@ dist/
 build/
 
 # Ignore Python bytecode
-src/__pycache__/
+__pycache__/
 *.egg-info/
 
 # pyinstall files
@@ -16,3 +16,18 @@ test.sh
 src/oldmain.py
 src/arrays_and_dicts.py
 src/lgcy_arts.py
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+.env/
+.env.bak/
+
+# Test / coverage
+.coverage
+htmlcov/
